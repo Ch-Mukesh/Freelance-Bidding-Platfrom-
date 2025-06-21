@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
-import { ThemeProvider } from './contexts/ThemeContext';
+import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import { SocketProvider } from './contexts/SocketContext';
 import { Layout } from './components/layout/Layout';
 
@@ -191,26 +191,39 @@ function AppRoutes() {
   );
 }
 
+// Theme-aware app wrapper
+function AppContent() {
+  const { theme } = useTheme();
+  
+  return (
+    <div className={`min-h-screen ${theme}`}>
+      <AppRoutes />
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          style: {
+            background: theme === 'dark' ? 'rgba(0, 0, 0, 0.9)' : 'rgba(255, 255, 255, 0.9)',
+            backdropFilter: 'blur(12px)',
+            color: theme === 'dark' ? '#e2e8f0' : '#1e293b',
+            border: theme === 'dark' ? '1px solid rgba(226, 232, 240, 0.1)' : '1px solid rgba(30, 41, 59, 0.1)',
+            borderRadius: '12px',
+            fontSize: '14px',
+            padding: '12px 16px',
+          },
+          duration: 4000,
+        }}
+      />
+    </div>
+  );
+}
+
 function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
         <Router>
           <SocketProvider>
-            <div className="min-h-screen">
-              <AppRoutes />
-              <Toaster
-                position="top-right"
-                toastOptions={{
-                  style: {
-                    background: 'rgba(0, 0, 0, 0.8)',
-                    backdropFilter: 'blur(12px)',
-                    color: '#e2e8f0',
-                    border: '1px solid rgba(226, 232, 240, 0.1)',
-                  },
-                }}
-              />
-            </div>
+            <AppContent />
           </SocketProvider>
         </Router>
       </AuthProvider>
